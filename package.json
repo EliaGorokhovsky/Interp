@@ -10,10 +10,6 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@google-cloud/translate": "^1.1.0",
-    "events": "^3.1.0",
-    "fs": "0.0.1-security",
-    "google-translate": "^3.0.0",
     "react": "16.9.0",
     "react-native": "0.61.5",
     "util": "^0.12.1",

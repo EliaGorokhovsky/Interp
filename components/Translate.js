@@ -12,11 +12,13 @@ import {
   TextInput
 } from 'react-native';
 
+
+
 // Imports the Google Cloud client library
-const { Translate } = require('@google-cloud/translate').v2;
+//const { Translate } = require('@google-cloud/translate').v2;
 
 // Creates a client
-const translate = new Translate();
+//const translate = new Translate();
 
 // import {
 //   Header,
@@ -27,19 +29,19 @@ const translate = new Translate();
 // } from 'react-native/Libraries/NewAppScreen';
 
 const url = 'https://rxnav.nlm.nih.gov/REST/';
+const api_key = 'AIzaSyDRzRq1ISVJf3IuLoiLnXmOfhFh6FVAusM'
 
 export class ToTranslate extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: ''
+      data: '',
+      language: ''
     }
     this.getCui = this.getCui.bind(this)
-    this.getTranslatedIngredient = this.getTranslatedIngredient.bind(this)
+    this.getYandexTranslation = this.getYandexTranslation.bind(this)
   }
 
-  //add in approx
-  //give other brands with same ingredient
   getCui(text){
     fetch(`https://rxnav.nlm.nih.gov/REST/rxcui.json?name=${text}&search=1`)
       .then(response => response.json())
@@ -54,41 +56,41 @@ export class ToTranslate extends Component {
       return this.state.data
   }
 
-  getIngredient(name){
-    let matchIngredient = ''
-    fetch(`https://rxnav.nlm.nih.gov/REST/rxclass/class/byDrugName.json?drugName=${name}`)
-      .then(response => response.json())
-      .then((responseJson)=> {
-        // console.log(responseJson);
-        let setOfIngredients = new Set();
-        responseJson.rxclassDrugInfoList.rxclassDrugInfo.forEach(element => {
-          setOfIngredients.add(element.minConcept.name);
-        });
-        const arrayOfIngredients = Array.from(setOfIngredients)
-        matchIngredient = arrayOfIngredients.reduce((a, b) => a.length <= b.length ? a : b)
-        console.log(`getIngredient returned: ${matchIngredient}`)
+  async getYandexTranslation(name){
+    let matchIngredient = fetch(`https://rxnav.nlm.nih.gov/REST/rxclass/class/byDrugName.json?drugName=${name}`)
+    .then(response => response.json())
+    .then((responseJson) => {
+      //console.log('responseJson: ', responseJson);
+      let setOfIngredients = new Set();
+      responseJson.rxclassDrugInfoList.rxclassDrugInfo.forEach(element => {
+        setOfIngredients.add(element.minConcept.name);
+      });
+      const arrayOfIngredients = Array.from(setOfIngredients)
+      matchIngredient = arrayOfIngredients.reduce((a, b) => a.length <= b.length ? a : b)
+      console.log(`getIngredient returned: ${matchIngredient}`)
+      return matchIngredient
+    })
+    .catch(error=>console.log(error));
+
+    let translated =  matchIngredient.then((matchIngredient) => fetch(`https://translation.googleapis.com/language/translate/v2?key=${api_key}&q=${matchIngredient}&target=ru`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json', 
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+       // q: matchIngredient,
+        //target: 'ru'
+        key: 'AIzaSyDRzRq1ISVJf3IuLoiLnXmOfhFh6FVAusM'
       })
-      .catch(error=>console.log(error));
-      
-      return matchIngredient;
-    }
+    })).then(result => result.json())
+      .then((result) => {
+        console.log(result.data.translations[0].translatedText)
+        return result.data.translations[0].translatedText
+    }).catch(error => console.log(error));
 
-  async getTranslation(name, language){
-    console.log('i am google. translator at your service.')
-    const [translations] = await translate.translate(name, language);
-    translations = Array.isArray(translations) ? translations : [translations];
-    // console.log('Translations:');
-    // translations.forEach((translation, i) => {
-    //   console.log(`${text[i]} => (${target}) ${translation}`);
-    // });
-    // console.log(`here is the translation: ${translation}`)
-    return
-  }
-
-  getTranslatedIngredient(name){
-    console.log('i am google. translator at your service.')
-    const translatedIngredients = this.getTranslation(this.getIngredient(name), 'ru');
-    return translatedIngredients
+    return await translated;
+    
   }
   
   render(){
@@ -97,8 +99,11 @@ export class ToTranslate extends Component {
         <TextInput
           style={{height: 40}}
           placeholder="Enter the medication"
-          onChangeText={ this.getTranslatedIngredient }
+          onChangeText={ this.getYandexTranslation }
         />
+        {/* <Button
+          onPress= {this.getYandexTranslation }
+        /> */}
       </View>
     );
   }
