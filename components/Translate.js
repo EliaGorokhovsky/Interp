@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   drug: {
     position: 'absolute',
     left: 85,
-    top: 220,
+    top: 225,
     width: 300,
     height: 61,
     fontSize: 20,
@@ -37,17 +37,17 @@ const styles = StyleSheet.create({
   },
   submit: {
     position: 'absolute',
-    left: 340,
-    top: 620,
+    left: 300,
+    top: 630,
     width: 70,
-    height: 61,
+    height: 101,
     elevation: -10
   },
   output: {
     position: 'absolute',
     left: 85,
-    top: 460,
-    width: 300,
+    top: 450,
+    width: 200,
     height: 61,
     fontSize: 20,
     color: 'white'
@@ -125,7 +125,7 @@ export class ToTranslate extends Component {
       });
       const arrayOfIngredients = Array.from(setOfIngredients)
       matchIngredient = arrayOfIngredients.reduce((a, b) => a.length <= b.length ? a : b)
-      if (matchIngredient == 'undefined'){
+      if (typeof(matchIngredient) == 'undefined'){
         return this.setState({out: 'Drug does not exist!'})
       }
       console.log(`getIngredient returned: ${matchIngredient}`)
