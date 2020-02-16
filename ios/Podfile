@@ -1,8 +1,8 @@
 platform :ios, '9.0'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
-target 'Interps' do
-  # Pods for Interps
+target 'version1' do
+  # Pods for version1
   pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "../node_modules/react-native/Libraries/FBReactNativeSpec"
   pod 'RCTRequired', :path => "../node_modules/react-native/Libraries/RCTRequired"
@@ -34,7 +34,7 @@ target 'Interps' do
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
-  target 'InterpsTests' do
+  target 'version1Tests' do
     inherit! :search_paths
     # Pods for testing
   end
@@ -42,10 +42,10 @@ target 'Interps' do
   use_native_modules!
 end
 
-target 'Interps-tvOS' do
-  # Pods for Interps-tvOS
+target 'version1-tvOS' do
+  # Pods for version1-tvOS
 
-  target 'Interps-tvOSTests' do
+  target 'version1-tvOSTests' do
     inherit! :search_paths
     # Pods for testing
   end

@@ -128,7 +128,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.interps"
+        applicationId "com.version1"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
