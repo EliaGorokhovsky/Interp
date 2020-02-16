@@ -125,8 +125,9 @@ export class ToTranslate extends Component {
       });
       const arrayOfIngredients = Array.from(setOfIngredients)
       matchIngredient = arrayOfIngredients.reduce((a, b) => a.length <= b.length ? a : b)
-      if (typeof(matchIngredient) == 'undefined'){
-        return this.setState({out: 'Drug does not exist!'})
+      if (typeof matchIngredient == "undefined"){
+        console.log("Detected undefined");
+        this.setState({out: 'Drug does not exist!'})
       }
       console.log(`getIngredient returned: ${matchIngredient}`)
       return matchIngredient
@@ -134,7 +135,8 @@ export class ToTranslate extends Component {
     .catch(error=>console.log(error));
 
 
-    let translated =  matchIngredient.then((matchIngredient) => fetch(`https://translation.googleapis.com/language/translate/v2?key=${api_key}&q=${matchIngredient}&target=${this.state.language}`, {
+    let translated =  matchIngredient.then((matchIngredient) => {
+      if (typeof matchIngredient != "undefined") return fetch(`https://translation.googleapis.com/language/translate/v2?key=${api_key}&q=${matchIngredient}&target=${this.state.language}`, {
       method: 'POST',
       headers: {
         Accept: 'application/json', 
@@ -145,11 +147,14 @@ export class ToTranslate extends Component {
         //target: 'ru'
         key: 'AIzaSyDRzRq1ISVJf3IuLoiLnXmOfhFh6FVAusM'
       })
-    })).then(result => result.json())
+    })
+    else return false
+    }).then(result => result? result.json() : {data: {translations: [{translatedText: "Drug not found!"}]}})
       .then((result) => {
         console.log(result.data.translations[0].translatedText)
-        if (result.data.translations[0].translatedText == 'undefined'){
-          return this.setState({out: 'Drug does not exist!'})
+        if (typeof result.data.translations[0].translatedText == 'undefined' || this.state.language == ""){
+          this.setState({out: 'Drug not found!'})
+          return undefined
         }
         this.setState({ out: result.data.translations[0].translatedText})
         return result.data.translations[0].translatedText

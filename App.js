@@ -31,9 +31,9 @@ const Stack = createStackNavigator()
 const styles = StyleSheet.create({
   searchButton: {
     position: 'absolute',
-    left: 55,
-    top: 240,
-    width: 300,
+    left: 20,
+    top: 260,
+    width: 320,
     height: 61,
     elevation: -10
   },
@@ -97,10 +97,10 @@ function HomeScreen({ navigation } ) {
 function SearchScreen({ navigation }) {
   return (
     <View>
-      <View style={styles.backButton}>
-        <Button title="Go to Home" onPress={() => navigation.navigate('Home')} />
-      </View>
       <ToTranslate/>
+      <View style={styles.backButton}>
+       <Button title="Go to Home" onPress={() => navigation.navigate('Home')} />
+     </View>
     </View>
   );
 }
