@@ -125,6 +125,9 @@ export class ToTranslate extends Component {
       });
       const arrayOfIngredients = Array.from(setOfIngredients)
       matchIngredient = arrayOfIngredients.reduce((a, b) => a.length <= b.length ? a : b)
+      if (matchIngredient == 'undefined'){
+        return this.setState({out: 'Drug does not exist!'})
+      }
       console.log(`getIngredient returned: ${matchIngredient}`)
       return matchIngredient
     })
@@ -145,6 +148,9 @@ export class ToTranslate extends Component {
     })).then(result => result.json())
       .then((result) => {
         console.log(result.data.translations[0].translatedText)
+        if (result.data.translations[0].translatedText == 'undefined'){
+          return this.setState({out: 'Drug does not exist!'})
+        }
         this.setState({ out: result.data.translations[0].translatedText})
         return result.data.translations[0].translatedText
     }).catch(error => console.log(error));
