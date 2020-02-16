@@ -97,7 +97,9 @@ export class ToTranslate extends Component {
     this.setState({ drug: text })
   }
   handleLanguage = (text) => {
-    this.setState({ language: ISO6391.getCode(text)})
+    let lang = ISO6391.getCode(text)
+    if (lang == "") this.setState({ language: "en"})
+    else this.setState({ language: ISO6391.getCode(text)})
   }
 
   getCui(text){
