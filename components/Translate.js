@@ -12,8 +12,12 @@ import {
   TextInput,
   ImageBackground,
   Button,
-  Dimensions
+  Dimensions,
+  Alert
 } from 'react-native';
+
+import Geolocation from '@react-native-community/geolocation';
+import Geocoder from 'react-native-geocoding';  
 
 
 const styles = StyleSheet.create({
@@ -78,7 +82,10 @@ const styles = StyleSheet.create({
 
 const url = 'https://rxnav.nlm.nih.gov/REST/';
 const api_key = 'AIzaSyDRzRq1ISVJf3IuLoiLnXmOfhFh6FVAusM'
+const map_api_key = 'AIzaSyBri9ifPSIN3pOL6bbtkz9QHeYwrFCkpV0'
 const ISO6391 = require('iso-639-1')
+
+Geocoder.init(map_api_key)
 
 export class ToTranslate extends Component {
   constructor(props) {
@@ -87,8 +94,15 @@ export class ToTranslate extends Component {
       language: '',
       drug: '',
       data: '',
-      out: ''
+      out: '',
+      initialPosition: {
+        latitude: null, 
+        longitude: null
+      },
+      country: null,
+      userWantsDefaultLocation: null
     }
+    this.getUserLocation = this.getUserLocation.bind(this)
     this.getCui = this.getCui.bind(this)
     this.getTranslation = this.getTranslation.bind(this)
   }
@@ -97,7 +111,58 @@ export class ToTranslate extends Component {
     this.setState({ drug: text })
   }
   handleLanguage = (text) => {
-    this.setState({ language: ISO6391.getCode(text)})
+    this.getUserLocation()
+    console.log('state changed', this.state.initialPosition)
+    const title = 'Medlingo Location Verification';
+    const message = `Is ${this.state.country}  your location?`;
+    const buttons = [
+        { text: 'Yes', onPress: () => this.setState({ userWantsDefaultLocation: 'Yes' }) },
+        { text: 'No', onPress: () => this.setState({ userWantsDefaultLocation: 'No' }) }
+    ];
+    Alert.alert(title, message, buttons)
+    if (this.state.userWantsDefaultLocation == 'Yes') {
+      this.setState({ language: ISO6391.getCode('US') })
+      console.log('iso6391 code', ISO6391.getCode('US'))
+    }
+    else {
+      this.setState({ language: ISO6391.getCode(text)})
+    }
+  }
+
+  getUserLocation() {
+    
+    console.log("navigator in")
+      Geolocation.getCurrentPosition(
+        //Will give you the current location
+        (position) => {
+            //console.log(position)
+            const currentLongitude = position.coords.longitude
+            //getting the Longitude from the location json
+            const currentLatitude = position.coords.latitude
+            //getting the Latitude from the location json
+
+            this.setState({ initialPosition: {
+              latitude: currentLatitude,
+              longitude: currentLongitude,
+            } });
+            Geocoder.from(position.coords.latitude, position.coords.longitude)
+            .then(json => {
+              console.log('json object', json)
+              let addressComponent = json.results[0].address_components
+              this.setState({
+                country: addressComponent[6]["long_name"]
+              })
+              console.log('address!', this.state.country)
+
+            })
+            .catch(error => console.warn(error));
+            //console.log(this.state.initialPosition)
+        },
+        (error) => alert(error.message),
+        { 
+           enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 
+        }
+     );
   }
 
   getCui(text){
@@ -173,6 +238,7 @@ export class ToTranslate extends Component {
               style={styles.language}
               placeholder="Enter language"
               placeholderTextColor='white'
+              onPress = { this.handleLanguage }       
               onChangeText={ this.handleLanguage }
             />
             <View style={styles.submit}>
