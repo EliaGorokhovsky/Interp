@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
 
 const url = 'https://rxnav.nlm.nih.gov/REST/';
 const api_key = 'AIzaSyDRzRq1ISVJf3IuLoiLnXmOfhFh6FVAusM'
-const map_api_key = 'AIzaSyBri9ifPSIN3pOL6bbtkz9QHeYwrFCkpV0'
+const map_api_key = 'google_map_api_key'
 const ISO6391 = require('iso-639-1')
 
 Geocoder.init(map_api_key)
